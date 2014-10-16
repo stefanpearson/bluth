@@ -16,14 +16,14 @@ Validates payloads against a specified JSON Schema within your API Blueprint.
 
     // Create instance of BlueprintSchema
     var blueprintSchema = new BlueprintSchema( '# My API Blueprint …', {
-      errorSchema: errorJsonSchema    // Response schema for 400+ status' (optional)
+      defaultErrorSchema: errorJsonSchema    // Response schema for 400+ status' (optional)
     } );
 
     // Access the blueprint JSON, for whatever reason
     var blueprint = blueprintSchema.blueprint;
 
     // Optionally set a response error schema later
-    blueprintSchema.errorSchema = errorJsonSchema;
+    blueprintSchema.defaultErrorSchema = errorJsonSchema;
 
     router.get( '/my/resource/:resourceId', function( request, response, next ) {
 
