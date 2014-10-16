@@ -5,6 +5,8 @@ Validates payloads against a specified JSON Schema within your API Blueprint.
 * Validate request bodies in your route handlers or middleware
 * Validate response bodies within tests
 
+## Installation
+
     npm install api-blueprint-json-schema --save
 
 ## Usage
