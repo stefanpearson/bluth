@@ -15,9 +15,16 @@ Validates payloads against a specified JSON Schema within your API Blueprint.
     var BlueprintSchema = require( 'api-blueprint-json-schema' );
 
     // Create instance of BlueprintSchema
-    var blueprintSchema = new BlueprintSchema( '# My API Blueprint …' );
+    var blueprintSchema = new BlueprintSchema( '# My API Blueprint …', {
+      errorSchema: errorJsonSchema    // Response error JSON Schema for 400+ status codes (optional)
+    } );
 
-    // Some route handler
+    // Access the blueprint JSON, for whatever reason
+    var blueprint = blueprintSchema.blueprint;
+
+    // Optionally set a response error schema later
+    blueprintSchema.errorSchema = errorJsonSchema;
+
     router.get( '/my/resource/:resourceId', function( request, response, next ) {
 
       // Validate payload
@@ -26,9 +33,13 @@ Validates payloads against a specified JSON Schema within your API Blueprint.
         type: 'request',              // eg. 'request' or 'response'
         route: request.route.path,    // eg. '/my/resource/:resourceId'
         method: request.method,       // eg. 'GET'
-        name: 'A'                     // eg. 'A', '200', '401' (optional)
+        statusCode: '200'             // eg. '200', '401' (only used if type = 'response')
 
       }, function( error, result ) {
+
+        if ( error ) {
+          console.log( error );
+        }
 
         if ( result.errors ) {
           return response.status( 400 ).send( result );
@@ -40,4 +51,12 @@ Validates payloads against a specified JSON Schema within your API Blueprint.
 
       } );
 
+    } );
+
+    // Get a schema, for whatever reason
+    var someSchema = blueprintSchema.get( {
+      type: 'request',
+      route: '/my/route,
+      method: 'GET',
+      statusCode: '200'
     } );
