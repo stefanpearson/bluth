@@ -56,7 +56,7 @@ Validates payloads against a specified JSON Schema within your API Blueprint.
     // Get a schema, for whatever reason
     var someSchema = blueprintSchema.get( {
       type: 'request',
-      route: '/my/route,
+      route: '/my/route',
       method: 'GET',
       statusCode: '200'
     } );

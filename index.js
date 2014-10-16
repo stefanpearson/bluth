@@ -1,6 +1,5 @@
 // External dependencies
-var fs = require( 'fs' ),
-    protagonist = require( 'protagonist' ),
+var protagonist = require( 'protagonist' ),
     _ = require( 'lodash' ),
     jsonSchema = require( 'jsonschema' ),
     async = require( 'async' );
@@ -17,9 +16,11 @@ var BlueprintSchema = function BlueprintSchema( blueprintMd, options ) {
 
   if ( options && options.constructor === Object ) {
 
-    options.forEach( function ( value, key ) {
-      this[ key ] = value;
-    } );
+    for ( key in options ) {
+      if ( options.hasOwnProperty( key ) ) {
+        this[ key ] = options[ key ];
+      }
+    }
 
   }
 
@@ -49,6 +50,7 @@ BlueprintSchema.prototype = {
  * @param options.type {String} Payload type, 'request' or 'response'
  * @param options.route {String} Route path
  * @param options.method {String} Route method
+ * @param options.statusCode {String, Number} Status code if options.type = 'response'
  */
 BlueprintSchema.prototype.get = function get( options, done ) {
 
@@ -57,23 +59,33 @@ BlueprintSchema.prototype.get = function get( options, done ) {
   async.waterfall( [
 
     function findEndpoint( done ) {
-      var endpoint;
+      var blueprintizedRoute = options.route.replace( /:([\w_-]+)[\s\/]*/, '{$1}' ),
+          endpoint;
 
-      _.find( blueprint.ast.resourceGroups, function ( resourceGroup ) {
+      _.find( this.blueprint.ast.resourceGroups, function ( resourceGroup ) {
         endpoint = _.find( resourceGroup.resources, function ( resource ) {
           return resource.uriTemplate === blueprintizedRoute;
         } );
         return endpoint;
       } );
 
+      if ( !endpoint ) {
+        return done( 'No endpoint' );
+      }
+
       done( null, endpoint );
 
     }.bind( this ),
 
     function findAction( endpoint, done ) {
+
       var action = _.find( endpoint.actions, function ( action ) {
         return action.method.toUpperCase() === options.method.toUpperCase();
       } );
+
+      if ( !action ) {
+        return done( 'No action' );
+      }
 
       done( null, action );
 
@@ -89,7 +101,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
           targetSchema = action.examples[ 0 ].requests[ 0 ].schema;
           break;
 
-        case 'response';
+        case 'response':
           // TODO: find target based on response status
           break;
       }
@@ -137,7 +149,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
  * @param options.type {String} Payload type, 'request' or 'response'
  * @param options.route {String} Route path
  * @param options.method {String} Route method
- * @param options.statusCode {String, Number} Status code if options.type is
+ * @param options.statusCode {String, Number} Status code if options.type = 'response'
  * @param done {Function} callback
  */
 BlueprintSchema.prototype.validate = function validate( data, options, done ) {
