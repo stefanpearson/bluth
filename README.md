@@ -14,9 +14,18 @@ Validates payloads against a specified JSON Schema within your API Blueprint.
     // Dependencies
     var BlueprintSchema = require( 'api-blueprint-json-schema' );
 
-    // Create instance of BlueprintSchema
-    var blueprintSchema = new BlueprintSchema( '# My API Blueprint …', {
+    var blueprintSchema;
+
+    // Create instance of BlueprintSchema from Blueprint JSON
+    blueprintSchema = new BlueprintSchema( myBlueprintJson , {
       defaultErrorSchema: errorJsonSchema    // Response schema for 400+ status' (optional)
+    } );
+
+    // Create instance of BlueprintSchema from Blueprint markdown (parsing is async)
+    BlueprintSchema.create( '# My Blueprint', {
+      defaultErrorSchema: errorJsonSchema
+    }, function ( error, blueprintSchemaInstance ) {
+      blueprintSchema = blueprintSchemaInstance;
     } );
 
     // Access the blueprint JSON, for whatever reason
