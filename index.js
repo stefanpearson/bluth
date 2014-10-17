@@ -2,17 +2,18 @@
 var protagonist = require( 'protagonist' ),
     _ = require( 'lodash' ),
     jsonSchema = require( 'jsonschema' ),
-    async = require( 'async' );
+    async = require( 'async' ),
+    schema = require( 'validate' );
 
 
 /**
  * Constructor
  *
- * @param blueprintMd {String} API Blueprint markdown
+ * @param blueprint {Object} API Blueprint
  * @param options {Object} Options
  * @param options.defaultErrorSchema {Object} JSON Schema for default error responses (400+)
  */
-var BlueprintSchema = function BlueprintSchema( blueprintMd, options ) {
+var BlueprintSchema = function BlueprintSchema( blueprint, options ) {
 
   if ( options && options.constructor === Object ) {
 
@@ -24,22 +25,34 @@ var BlueprintSchema = function BlueprintSchema( blueprintMd, options ) {
 
   }
 
-  protagonist.parse( blueprintMd, function ( error, result ) {
-
-    if ( error ) {
-      throw error;
-    }
-
-    this.blueprint = result;
-
-  }.bind( this ) );
+  this.blueprint = blueprint;
 
   return this;
 };
 
 
-BlueprintSchema.prototype = {
-  blueprint: {}
+/**
+ * Instantiate a BlueprintSchema after parsing an API Blueprint
+ *
+ * @param blueprintMd {String} API Blueprint markdown
+ * @param options {Object} Options
+ * @param options.defaultErrorSchema {Object} JSON Schema for default error responses (400+)
+ */
+BlueprintSchema.create = BlueprintSchema.prototype.create = function create( blueprintMd, options, done ) {
+
+  if ( typeof blueprintMd !== 'string' ) {
+    return done( 'Blueprint must be a markdown string' );
+  }
+
+  protagonist.parse( blueprintMd, function( error, result ) {
+
+    if ( error ) {
+      return done( error );
+    }
+
+    done( null, new BlueprintSchema( result, options ) );
+  } );
+
 };
 
 
@@ -54,7 +67,30 @@ BlueprintSchema.prototype = {
  */
 BlueprintSchema.prototype.get = function get( options, done ) {
 
-  // TODO: validate arguments
+  var optionsErrors = schema( {
+    type: {
+      type: 'string',
+      required: true,
+      match: /^request|response$/
+    },
+    route: {
+      type: 'string',
+      required: true
+    },
+    method: {
+      type: 'string',
+      required: true
+    },
+    statusCode: {
+      type: 'string'
+    }
+  }, {
+    typecast: true
+  } ).validate( options );
+
+  if ( optionsErrors.length ) {
+    return done( 'invalid options' );
+  }
 
   async.waterfall( [
 
@@ -62,8 +98,8 @@ BlueprintSchema.prototype.get = function get( options, done ) {
       var blueprintizedRoute = options.route.replace( /:([\w_-]+)[\s\/]*/, '{$1}' ),
           endpoint;
 
-      _.find( this.blueprint.ast.resourceGroups, function ( resourceGroup ) {
-        endpoint = _.find( resourceGroup.resources, function ( resource ) {
+      _.find( this.blueprint.ast.resourceGroups, function( resourceGroup ) {
+        endpoint = _.find( resourceGroup.resources, function( resource ) {
           return resource.uriTemplate === blueprintizedRoute;
         } );
         return endpoint;
@@ -78,8 +114,9 @@ BlueprintSchema.prototype.get = function get( options, done ) {
     }.bind( this ),
 
     function findAction( endpoint, done ) {
+      var action;
 
-      var action = _.find( endpoint.actions, function ( action ) {
+      action = _.find( endpoint.actions, function( action ) {
         return action.method.toUpperCase() === options.method.toUpperCase();
       } );
 
@@ -102,7 +139,10 @@ BlueprintSchema.prototype.get = function get( options, done ) {
           break;
 
         case 'response':
-          // TODO: find target based on response status
+          targetSchema = _.find( action.examples[ 0 ].responses, { name: options.statusCode } );
+          if ( targetSchema ) {
+            targetSchema = targetSchema.schema;
+          }
           break;
       }
 
@@ -156,7 +196,7 @@ BlueprintSchema.prototype.validate = function validate( data, options, done ) {
 
   // TODO: validate arguments
 
-  this.get( options, function ( error, schema ) {
+  this.get( options, function( error, schema ) {
     var result;
 
     try {
