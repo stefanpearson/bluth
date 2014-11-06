@@ -44,7 +44,7 @@ BlueprintSchema.create = BlueprintSchema.prototype.create = function create( blu
     return done( 'Blueprint must be a markdown string' );
   }
 
-  protagonist.parse( blueprintMd, function( error, result ) {
+  protagonist.parse( blueprintMd, function( error, result, warnings ) {
 
     if ( error ) {
       return done( error );
@@ -100,7 +100,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
 
       _.find( this.blueprint.ast.resourceGroups, function( resourceGroup ) {
         endpoint = _.find( resourceGroup.resources, function( resource ) {
-          return resource.uriTemplate === blueprintizedRoute;
+          return resource.uriTemplate.split( '?' )[ 0 ] === blueprintizedRoute;
         } );
         return endpoint;
       } );
