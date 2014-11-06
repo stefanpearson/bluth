@@ -10,7 +10,7 @@ Request and response payloads include data schemas, to the [JSON schema spec](ht
 
 Authentication operations.
 
-## Test [/test/{id}]
+## Test [/test/{id}?niceParameter={niceParameter}]
 
 + Parameters
 
