@@ -41,7 +41,7 @@ var BlueprintSchema = function BlueprintSchema( blueprint, options ) {
 BlueprintSchema.create = BlueprintSchema.prototype.create = function create( blueprintMd, options, done ) {
 
   if ( typeof blueprintMd !== 'string' ) {
-    return done( 'Blueprint must be a markdown string' );
+    return done( new Error( 'Blueprint must be a markdown string' ) );
   }
 
   protagonist.parse( blueprintMd, function( error, result, warnings ) {
@@ -89,13 +89,13 @@ BlueprintSchema.prototype.get = function get( options, done ) {
   } ).validate( options );
 
   if ( optionsErrors.length ) {
-    return done( 'invalid options' );
+    return done( new Error( 'invalid options' ) );
   }
 
   async.waterfall( [
 
     function findEndpoint( done ) {
-      var blueprintizedRoute = options.route.replace( /:([\w_-]+)[\s\/]*/, '{$1}' ),
+      var blueprintizedRoute = options.route.replace( /:([\w_-]+)[\s]*/, '{$1}' ),
           endpoint;
 
       _.find( this.blueprint.ast.resourceGroups, function( resourceGroup ) {
@@ -106,7 +106,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
       } );
 
       if ( !endpoint ) {
-        return done( 'No endpoint' );
+        return done( new Error( 'No endpoint' ) );
       }
 
       done( null, endpoint );
@@ -121,7 +121,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
       } );
 
       if ( !action ) {
-        return done( 'No action' );
+        return done( new Error( 'No action' ) );
       }
 
       done( null, action );
@@ -151,7 +151,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
         if ( this.defaultErrorSchema ) {
           return done( null, this.defaultErrorSchema );
         } else {
-          return done( 'Could not find JSON Schema' );
+          return done( new Error( 'Could not find JSON Schema' ) );
         }
 
       } else {
@@ -159,7 +159,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
         try {
           schema = JSON.parse( targetSchema );
         } catch( error ) {
-          return done( 'Could not parse JSON Schema' );
+          return done( new Error( 'Could not parse JSON Schema' ) );
         }
 
         return done( null, schema );
@@ -171,7 +171,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
   ], function finalCallback( error, schema ) {
 
     if ( error ) {
-      return done( 'Could not find a valid schema for ' + options.route + ' ' + options.method );
+      return done( new Error( 'Could not find a valid schema for ' + options.route + ' ' + options.method ) );
     }
 
     done( null, schema );
@@ -194,10 +194,12 @@ BlueprintSchema.prototype.get = function get( options, done ) {
  */
 BlueprintSchema.prototype.validate = function validate( data, options, done ) {
 
-  // TODO: validate arguments
-
   this.get( options, function( error, schema ) {
     var result;
+
+    if ( error ) {
+      return done( error );
+    }
 
     try {
       result = jsonSchema.validate( data, schema );
