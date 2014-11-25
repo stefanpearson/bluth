@@ -95,7 +95,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
   async.waterfall( [
 
     function findEndpoint( done ) {
-      var blueprintizedRoute = options.route.replace( /:([\w_-]+)[\s]*/, '{$1}' ),
+      var blueprintizedRoute = options.route.replace( /:([\w_-]+)[\s]*/g, '{$1}' ),
           endpoint;
 
       _.find( this.blueprint.ast.resourceGroups, function( resourceGroup ) {
@@ -171,7 +171,7 @@ BlueprintSchema.prototype.get = function get( options, done ) {
   ], function finalCallback( error, schema ) {
 
     if ( error ) {
-      return done( new Error( 'Could not find a valid schema for ' + options.route + ' ' + options.method ) );
+      return done( new Error( 'Could not find a valid schema for ' + options.route + ' ' + options.method + ': ' + error ) );
     }
 
     done( null, schema );
