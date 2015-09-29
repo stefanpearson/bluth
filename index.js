@@ -44,7 +44,7 @@ BlueprintSchema.create = BlueprintSchema.prototype.create = function create( blu
     return done( new Error( 'Blueprint must be a markdown string' ) );
   }
 
-  protagonist.parse( blueprintMd, function( error, result, warnings ) {
+  protagonist.parse( blueprintMd, { type: 'ast' }, function( error, result, warnings ) {
 
     if ( error ) {
       return done( error );
