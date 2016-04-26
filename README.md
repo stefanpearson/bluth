@@ -25,7 +25,10 @@ npm install bluth --save
 var Bluth = require( 'bluth' );
 
 
-// A default error schema can be provided to catch any response status codes that aren't listed in the Blueprint
+/*
+ * A default error schema can be provided to catch any
+ * response status codes that aren't listed in the Blueprint
+ */
 var bluth = new Bluth( myBlueprintMarkdown, {
   defaultErrorSchema: myDefaultErrorSchema
 } );
