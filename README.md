@@ -15,27 +15,21 @@ npm install bluth --save
 
 ## Usage
 
-```javascript
+###### Instantiation
 
-// Dependencies
+```javascript
 var Bluth = require( 'bluth' );
 
 
-// Instantiate
 // A default error schema can be provided to catch any response status codes that aren't listed in the Blueprint
 var bluth = new Bluth( myBlueprintMarkdown, {
   defaultErrorSchema: myDefaultErrorSchema
 } );
+```
 
+###### Finding a schema
 
-// Access the blueprint object, for whatever reason
-bluth.get()
-  .then( function( blueprint ) {
-    // hooray!
-  } );
-
-
-// Find a schema within your Blueprint
+```javascript
 bluth.find( {
 
   // 'request' or 'response'
@@ -54,9 +48,13 @@ bluth.find( {
   .then( function( schema ) {
     // hooray!
   } );
+```
 
+###### Validating a payload
 
-// Validate a payload (uses jsonschema's built in validation method)
+Uses `jsonschema`'s built in validation method.
+
+```javascript
 bluth.validate( myRequestData, {
   type: 'request',
   route: '/my/resource/:resourceId',
@@ -68,5 +66,13 @@ bluth.validate( myRequestData, {
   .catch( function( error ) {
     // Error thrown from jsonschema, with validation errors listed
   } );
+```
 
+###### Retrieving the Blueprint object
+
+```javascript
+bluth.get()
+  .then( function( blueprint ) {
+    // hooray!
+  } );
 ```
