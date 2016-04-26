@@ -24,7 +24,6 @@ npm install bluth --save
 ```javascript
 var Bluth = require( 'bluth' );
 
-
 /*
  * A default error schema can be provided to catch any
  * response status codes that aren't listed in the Blueprint
