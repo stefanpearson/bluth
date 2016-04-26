@@ -1,20 +1,22 @@
 {
-  "name": "api-blueprint-json-schema",
-  "version": "0.3.0",
-  "description": "",
+  "name": "bluth",
+  "version": "0.0.1",
+  "description": "Lightweight library to validate requests and responses, according to your API blueprint.",
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ribot/api-blueprint-json-schema.git"
+    "url": "https://github.com/ribot/bluth.git"
   },
   "keywords": [
     "api",
     "blueprint",
     "json",
-    "schema"
+    "schema",
+    "validation",
+    "promise"
   ],
   "author": "ribot",
   "contributors": [
@@ -25,18 +27,16 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ribot/api-blueprint-json-schema/issues"
+    "url": "https://github.com/ribot/bluth/issues"
   },
-  "homepage": "https://github.com/ribot/api-blueprint-json-schema",
-  "engines": {
-    "node": "0.12.x"
-  },
+  "homepage": "https://github.com/ribot/bluth",
   "dependencies": {
-    "async": "^0.9.0",
+    "bluebird": "^3.3.5",
     "jsonschema": "^1.0.0",
-    "lodash": "^2.4.1",
+    "lodash": "^2.4.2",
+    "mocha": "^2.4.5",
     "protagonist": "^1.0.0",
-    "validate": "^2.1.5"
+    "should": "^8.3.1"
   },
   "devDependencies": {
     "mocha": "^1.21.5",

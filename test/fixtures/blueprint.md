@@ -10,13 +10,13 @@ Request and response payloads include data schemas, to the [JSON schema spec](ht
 
 Authentication operations.
 
-## Test [/test/{id}?niceParameter={niceParameter}]
+## Test [/test/{id}/something?niceParameter={niceParameter}]
 
 + Parameters
 
     + id (required, string) ... Test ```id```
 
-### Retrieve [GET]
+### Retrieve [POST]
 
 Retrieve test data.
 
@@ -25,51 +25,60 @@ Retrieve test data.
     + Body
 
             {
-              "name": "Lionel Rich-Tea",
-              "isDancingOnTheCeiling": true
+              "name": "G.O.B.",
+              "noiseAChickenMakes": "Caw! Ca-caw!"
             }
 
     + Schema
 
             {
               "$schema": "http://json-schema.org/draft-04/schema#",
-              "title": "/test/{id} GET request",
+              "title": "/test/{id}/something POST request",
               "type": "object",
               "required": [
-                "name"
+                "name",
+                "noiseAChickenMakes"
               ],
               "properties": {
                 "name": {
-                  "description": "Biscuit/Motown pun.",
+                  "description": "Name.",
                   "type": "string"
                 },
-                "isDancingOnTheCeiling": {
-                  "description": "Is the user dancing on the ceiling?",
-                  "type": "boolean"
+                "noiseAChickenMakes": {
+                  "description": "Valid chicken noise.",
+                  "type": "string",
+                  "enum": [ "Caw! Ca-caw!", "A-coodle-doodle-do!", "Chee-chaw!", "Coo-coo-ca-chaw!" ]
                 }
-              }
+              },
+              "additionalProperties": false
             }
 
-+ Response 200
++ Response 201
 
     + Body
 
             {
-              "message": "Oh, what a feeling!"
+              "name": "G.O.B.",
+              "noiseAChickenMakes": "Caw! Ca-caw!"
             }
 
     + Schema
 
             {
               "$schema": "http://json-schema.org/draft-04/schema#",
-              "title": "/test/{id} GET 200 response",
+              "title": "/test/{id}/something POST 201 response",
               "type": "object",
               "required": [
-                "message"
+                "name",
+                "noiseAChickenMakes"
               ],
               "properties": {
-                "message": {
-                  "description": "Hello.",
+                "name": {
+                  "description": "Name.",
+                  "type": "string"
+                },
+                "noiseAChickenMakes": {
+                  "description": "Valid chicken noise.",
                   "type": "string"
                 }
               }
@@ -83,7 +92,7 @@ Retrieve test data.
 
             {
               "$schema": "http://json-schema.org/draft-04/schema#",
-              "title": "/test/{id} GET 500 response",
+              "title": "/test/{id} POST 500 response",
               "type": "object",
               "required": [
                 "stackTrace"
