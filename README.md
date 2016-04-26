@@ -4,7 +4,11 @@ A lightweight promise-based library to validate payloads against a specified JSO
 
 ### Why?
 
-* Validate request bodies in your route handlers or middleware
+It encourages developers to utilise their API blueprint as a 'source of truth', creating synergy between documentation and source code. This ultimately improves quality and developer-experience for those using the API.
+
+For example:
+
+* Validate request bodies in your routing middleware
 * Validate response bodies within tests
 
 ## Installation
