@@ -1,75 +1,88 @@
-# API Blueprint JSON Schema
+# Bluth
 
-Validates payloads against a specified JSON Schema within your API Blueprint.
+A lightweight promise-based library to validate payloads against a specified JSON Schema within your API Blueprint.
 
-* Validate request bodies in your route handlers or middleware
+### Why?
+
+It encourages developers to utilise their API blueprint as a 'source of truth', creating synergy between documentation and source code. This ultimately improves quality and developer-experience for those using the API.
+
+For example:
+
+* Validate request bodies in your routing middleware
 * Validate response bodies within tests
 
 ## Installation
 
 ```sh
-npm install api-blueprint-json-schema --save
+npm install bluth --save
 ```
 
 ## Usage
 
+###### Instantiation
+
 ```javascript
-// Dependencies
-var BlueprintSchema = require( 'api-blueprint-json-schema' );
+var Bluth = require( 'bluth' );
 
-var blueprintSchema;
-
-// Create instance of BlueprintSchema from Blueprint JSON
-blueprintSchema = new BlueprintSchema( myBlueprintJson , {
-  defaultErrorSchema: errorJsonSchema    // Response schema for 400+ status' (optional)
-} );
-
-// Create instance of BlueprintSchema from Blueprint markdown (parsing is async)
-BlueprintSchema.create( '# My Blueprint', {
-  defaultErrorSchema: errorJsonSchema
-}, function ( error, blueprintSchemaInstance ) {
-  blueprintSchema = blueprintSchemaInstance;
-} );
-
-// Access the blueprint JSON, for whatever reason
-var blueprint = blueprintSchema.blueprint;
-
-// Optionally set a response error schema later
-blueprintSchema.defaultErrorSchema = errorJsonSchema;
-
-router.get( '/my/resource/:resourceId', function( request, response, next ) {
-
-  // Validate payload
-  blueprintSchema.validate( request.body, {
-
-    type: 'request',              // eg. 'request' or 'response'
-    route: request.route.path,    // eg. '/my/resource/:resourceId'
-    method: request.method,       // eg. 'GET'
-    statusCode: '200'             // eg. '200' (only used if type = 'response')
-
-  }, function( error, result ) {
-
-    if ( error ) {
-      console.log( error );
-    }
-
-    if ( result.errors ) {
-      return response.status( 400 ).send( result );
-    }
-
-    return response.status( 200 ).send( {
-      message: 'success!'
-    } );
-
-  } );
-
-} );
-
-// Get a schema, for whatever reason
-var someSchema = blueprintSchema.get( {
-  type: 'request',
-  route: '/my/route',
-  method: 'GET',
-  statusCode: '200'
+/*
+ * A default error schema can be provided to catch any
+ * response status codes that aren't listed in the Blueprint
+ */
+var bluth = new Bluth( myBlueprintMarkdown, {
+  defaultErrorSchema: myDefaultErrorSchema
 } );
 ```
+
+###### Finding a schema
+
+```javascript
+bluth.find( {
+
+  // 'request' or 'response'
+  type: 'reponse',
+
+  // URL path
+  route: '/my/route',
+
+  // HTTP method
+  method: 'GET',
+
+  // HTTP status code (required if type is 'response')
+  statusCode: 200
+
+} )
+  .then( function( schema ) {
+    // hooray!
+  } );
+```
+
+###### Validating a payload
+
+Uses `jsonschema`'s built in validation method.
+
+```javascript
+bluth.validate( myRequestData, {
+  type: 'request',
+  route: '/my/resource/:resourceId',
+  method: 'GET'
+} )
+  .then( function() {
+    // Success!
+  } )
+  .catch( function( error ) {
+    // Error thrown from jsonschema, with validation errors listed
+  } );
+```
+
+###### Retrieving the Blueprint object
+
+```javascript
+bluth.get()
+  .then( function( blueprint ) {
+    // hooray!
+  } );
+```
+
+### Why the name?
+
+A pun on 'Blueprint' and 'source of truth', with Arrested Development references. I thought it was funny at the time.

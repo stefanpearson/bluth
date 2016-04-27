@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Error",
+  "type": "object",
+  "required": [
+    "code",
+    "message",
+    "errors"
+  ],
+  "properties": {
+    "code": {
+      "description": "Error code reference.",
+      "type": "string"
+    },
+    "message": {
+      "description": "Error description",
+      "type": "string"
+    },
+    "errors": {
+      "description": "Errors related to request data.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "property",
+          "message"
+        ],
+        "properties": {
+          "property": {
+            "description": "Property name.",
+            "type": "string"
+          },
+          "message": {
+            "description": "Error message relating to a property.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
