@@ -2,7 +2,7 @@ FORMAT: 1A
 
 # Test API Blueprint
 
-Test API Blueprint for ```api-blueprint-json-schema```.
+Test API Blueprint for ```Bluth```.
 
 Request and response payloads include data schemas, to the [JSON schema spec](http://json-schema.org/).
 
