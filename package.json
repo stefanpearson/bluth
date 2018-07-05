@@ -1,6 +1,6 @@
 {
   "name": "bluth",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Lightweight library to validate requests and responses, according to your API blueprint.",
   "main": "index.js",
   "scripts": {
@@ -33,7 +33,7 @@
   "dependencies": {
     "bluebird": "^3.3.5",
     "jsonschema": "^1.0.0",
-    "lodash": "^2.4.2",
+    "lodash": "^4.17.10",
     "protagonist": "^1.0.0"
   },
   "devDependencies": {
